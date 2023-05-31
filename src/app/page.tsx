@@ -1,26 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { type DepartmentData, getData } from "@/api/chartData";
+import { useState } from "react";
+import { getData } from "@/api/chartData";
 import { BarChart } from "@/components/barChart";
+import { useLoadOnMount } from "@/hooks/useLoadOnMount";
 
 export default function Home() {
-  const [data, setData] = useState<DepartmentData[]>([]);
   const [sortOrder, setSortOrder] = useState("");
 
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, isLoading, error } = useLoadOnMount(getData, []);
 
-  useEffect(() => {
-    setIsLoading(true);
-    getData()
-      .then((data) => setData(data))
-      .catch(console.log)
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  if (isLoading) {
-    return "loading...";
-  }
+  if (isLoading) return "loading...";
+  if (error) return "error";
 
   return (
     <>
