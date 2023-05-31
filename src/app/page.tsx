@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {type DepartmentData, getData} from "@/api/chartData";
+import { type DepartmentData, getData } from "@/api/chartData";
 import { BarChart } from "@/components/barChart";
 
 export default function Home() {
@@ -22,16 +22,6 @@ export default function Home() {
     return "loading...";
   }
 
-  const sortValue = "ticketCount";
-
-  let sortedData = data;
-
-  if (sortOrder === "asc") {
-    sortedData = [...data].sort((a, b) => a[sortValue] - b[sortValue]);
-  } else if (sortOrder === "desc") {
-    sortedData = [...data].sort((a, b) => b[sortValue] - a[sortValue]);
-  }
-
   return (
     <>
       <select
@@ -43,38 +33,17 @@ export default function Home() {
         <option value="desc">descending</option>
       </select>
 
-      <BarChart data={sortedData} width={"500px"} height={"250px"} />
+      <div style={{ width: "500px", height: "250px" }}>
+        <BarChart
+          data={data.map((datum) => ({
+            ...datum,
+            title: `${datum.name} (${datum.ticketCount})`,
+            value: datum.ticketCount,
+            color: datum.colour,
+          }))}
+          sortOrder={sortOrder}
+        />
+      </div>
     </>
-  );
-}
-
-function BarChart({
-  data,
-  width,
-  height,
-}: {
-  data: Data[];
-  width: string;
-  height: string;
-}) {
-  const maxItemHeight = Math.max(...data.map((datum) => datum.ticketCount));
-
-  return (
-    <div
-      className="flex items-end gap-2 border-2 border-black"
-      style={{ width, height }}
-    >
-      {data.map((datum) => (
-        <div
-          className="w-full"
-          key={datum.id}
-          style={{
-            backgroundColor: datum.colour,
-            height: `${(datum.ticketCount / maxItemHeight) * 100}%`,
-          }}
-          title={`${datum.name} (${datum.ticketCount})`}
-        ></div>
-      ))}
-    </div>
   );
 }
